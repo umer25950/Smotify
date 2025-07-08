@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spotify - Web Player: Music for everyone</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div class="container">
+    <!-- LEFT PANEL -->
+    <div class="left">
+      <div class="home">
+        <div class="close">
+          <img src="close.svg" alt="close" />
+        </div>
+        <div class="logo">
+          <img width="100px" src="logo.svg" alt="Logo" />
+        </div>
+        <ul>
+          <li><img src="home.svg" alt="home" />Home</li>
+          <li><img src="search.svg" alt="search" />Search</li>
+        </ul>
+      </div>
+
+      <div class="library">
+        <div class="heading">
+          <img src="library.svg" alt="" />
+          <h2>Your Library</h2>
+        </div>
+
+        <div class="songlist">
+          <ul>
+           
+          </ul>
+        </div>
+
+        <footer class="fotter">
+          <div><a href="#">Legal</a></div>
+          <div><a href="#">Safety & Privacy</a></div>
+          <div><a href="#">Privacy Policy</a></div>
+          <div><a href="#">Cookies</a></div>
+          <div><a href="#">About Ads</a></div>
+          <div><a href="#">Accessibility</a></div>
+        </footer>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="right">
+      <!-- HEADER -->
+      <div class="header">
+        <div class="nav">
+          <div style="display: flex;">
+            <img width="40px" class="ham" src="ham.svg" alt="menu" />
+            <div class="arrows">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="white" viewBox="0 0 24 24">
+                <path d="M15 6C15 6 9 10.4 9 12s6 6 6 6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="white" viewBox="0 0 24 24">
+                <path d="M9 6s6 4.4 6 6-6 6-6 6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="buttons">
+            <button>Sign up</button>
+            <button>Log in</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- MAIN PLAYLIST SECTION -->
+      <div class="spotify-playlist">
+        <h1>Spotify Playlists</h1>
+        <div class="cardcontainer">
+          <div class="card">
+            <img src="Screenshot 2024-06-22 200649.png" alt="Playlist" />
+            <div class="text-section">
+              <div class="play"><img src="play1.svg" alt="Play Icon" /></div>
+              <h2>Lofi Chill</h2>
+              <p>Lazy slow lofi beats for laid-back moments.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ✅ PLAYBAR NOW INSIDE .right -->
+     <div class="playbar">
+  <div class="seekbar">
+    <div class="circle"></div>
+  </div>
+
+  <div class="current-song-name"></div>
+
+  <div class="songbuttons">
+    <img id="previous" src="previoussong.svg" alt="">
+    <img id="playToggle" src="play.svg" alt="">
+    <img id="next" src="nextsong.svg" alt="">
+  </div>
+
+  <div class="songtime"></div>
+
+  <!-- ✅ This MUST be inside playbar -->
+  <div class="volume-control">
+    <img src="volume.svg" alt="">
+    <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1" />
+  </div>
+</div>
+
+    </div> <!-- /.right -->
+  </div> <!-- /.container -->
+
+  <script src="script.js"></script>
+</body>
+</html>
