@@ -31,9 +31,7 @@
         </div>
 
         <div class="songlist">
-          <ul>
-           
-          </ul>
+          <ul></ul>
         </div>
 
         <footer class="fotter">
@@ -74,7 +72,8 @@
       <div class="spotify-playlist">
         <h1>Spotify Playlists</h1>
         <div class="cardcontainer">
-          <div class="card">
+
+          <div data-folder="cs" class="card">
             <img src="Screenshot 2024-06-22 200649.png" alt="Playlist" />
             <div class="text-section">
               <div class="play"><img src="play1.svg" alt="Play Icon" /></div>
@@ -82,31 +81,76 @@
               <p>Lazy slow lofi beats for laid-back moments.</p>
             </div>
           </div>
+
+          <div data-folder="ncs" class="card">
+            <img src="Screenshot 2024-06-22 200649.png" alt="Playlist" />
+            <div class="text-section">
+              <div class="play"><img src="play1.svg" alt="Play Icon" /></div>
+              <h2>Focus Beats</h2>
+              <p>Beats to help you concentrate and work deeply.</p>
+            </div>
+          </div>
+
+          <div class="card">
+            <img src="Screenshot 2024-06-22 200649.png" alt="Playlist" />
+            <div class="text-section">
+              <div class="play"><img src="play1.svg" alt="Play Icon" /></div>
+              <h2>Chill Vibes</h2>
+              <p>Relax and unwind with this mellow mix.</p>
+            </div>
+          </div>
+
+          <div class="card">
+            <img src="Screenshot 2024-06-22 200649.png" alt="Playlist" />
+            <div class="text-section">
+              <div class="play"><img src="play1.svg" alt="Play Icon" /></div>
+              <h2>Hip-Hop Daily</h2>
+              <p>Your daily dose of hip-hop and rap hits.</p>
+            </div>
+          </div>
+
+          <div class="card">
+            <img src="Screenshot 2024-06-22 200649.png" alt="Playlist" />
+            <div class="text-section">
+              <div class="play"><img src="play1.svg" alt="Play Icon" /></div>
+              <h2>Top Hits</h2>
+              <p>The most streamed tracks this week worldwide.</p>
+            </div>
+          </div>
+
+          <div class="card">
+            <img src="Screenshot 2024-06-22 200649.png" alt="Playlist" />
+            <div class="text-section">
+              <div class="play"><img src="play1.svg" alt="Play Icon" /></div>
+              <h2>Gaming Mix</h2>
+              <p>High-energy tracks to level up your play.</p>
+            </div>
+          </div>
+
         </div>
       </div>
 
-      <!-- ✅ PLAYBAR NOW INSIDE .right -->
-     <div class="playbar">
-  <div class="seekbar">
-    <div class="circle"></div>
-  </div>
+      <!-- ✅ PLAYBAR -->
+      <div class="playbar">
+        <div class="seekbar">
+          <div class="circle"></div>
+        </div>
 
-  <div class="current-song-name"></div>
+        <div class="current-song-name"></div>
 
-  <div class="songbuttons">
-    <img id="previous" src="previoussong.svg" alt="">
-    <img id="playToggle" src="play.svg" alt="">
-    <img id="next" src="nextsong.svg" alt="">
-  </div>
+        <div class="songbuttons">
+          <img id="previous" src="previoussong.svg" alt="Previous">
+          <img id="playToggle" src="play.svg" alt="Play/Pause">
+          <img id="next" src="nextsong.svg" alt="Next">
+        </div>
 
-  <div class="songtime"></div>
+        <div class="volume-control">
+          <img src="volume.svg" alt="Volume Icon" />
+          <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1" />
+        </div>
 
-  <!-- ✅ This MUST be inside playbar -->
-  <div class="volume-control">
-    <img src="volume.svg" alt="">
-    <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1" />
-  </div>
-</div>
+        <div class="songtime"></div>
+      </div>
 
     </div> <!-- /.right -->
   </div> <!-- /.container -->

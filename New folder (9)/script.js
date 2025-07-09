@@ -1,5 +1,6 @@
 let currentAudio = null;
 let songs = [];
+let currFolder = "";
 
 // Convert seconds to MM:SS
 function secondsToMinutesSeconds(seconds) {
@@ -9,19 +10,24 @@ function secondsToMinutesSeconds(seconds) {
     return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
 }
 
-// Fetch all .mp3 files from server
-async function getSongs() {
-    const res = await fetch("http://127.0.0.1:3000/songs/");
+
+// Fetch .mp3 files from folder
+async function getSongs(folder) {
+    currFolder = folder;
+    const res = await fetch(`http://127.0.0.1:3000/${folder}/`);
     const text = await res.text();
     const div = document.createElement("div");
     div.innerHTML = text;
 
     const anchors = div.getElementsByTagName("a");
+    songs = [];
     for (let element of anchors) {
         if (element.href.endsWith(".mp3")) {
-            songs.push(element.href.split("/songs/")[1]);
+            // Extract only filename from full path
+            songs.push(element.href.split("/").pop());
         }
     }
+
     return songs;
 }
 
@@ -29,16 +35,14 @@ async function getSongs() {
 function playmusic(track) {
     if (currentAudio) currentAudio.pause();
 
-    currentAudio = new Audio("/songs/" + track);
+
+    currentAudio = new Audio(`/${currFolder}/` + track);
     currentAudio.play();
     currentAudio.volume = document.getElementById("volumeSlider").value;
 
-
-    // ✅ Reset seekbar immediately
     document.querySelector(".circle").style.left = "0%";
     document.querySelector(".songtime").innerText = "00:00 / 00:00";
 
-    // Update play/pause icon
     const playToggle = document.getElementById("playToggle");
     if (playToggle) playToggle.src = "pause.svg";
 
@@ -49,29 +53,28 @@ function playmusic(track) {
     currentAudio.addEventListener("timeupdate", () => {
         const current = currentAudio.currentTime;
         const total = currentAudio.duration;
-        document.querySelector(".songtime").innerHTML =
+        document.querySelector(".songtime").innerText =
             `${secondsToMinutesSeconds(current)} / ${secondsToMinutesSeconds(total)}`;
         document.querySelector(".circle").style.left = (current / total) * 100 + "%";
     });
 
-    document.querySelector(".seekbar").addEventListener("click", (e) => {
+    document.querySelector(".seekbar").onclick = (e) => {
         const percent = e.offsetX / e.currentTarget.getBoundingClientRect().width;
         if (currentAudio.duration) {
             currentAudio.currentTime = percent * currentAudio.duration;
         }
-    });
+    };
 
     const songNameElem = document.querySelector(".current-song-name");
     if (songNameElem) songNameElem.innerText = track.replace(".mp3", "");
 }
 
-// Main initializer
-async function main() {
-    songs = await getSongs();
+// Load song list into UI
+function loadSongListUI(songArray) {
     const ul = document.querySelector(".songlist ul");
+    ul.innerHTML = "";
 
-    // Render song list
-    for (const song of songs) {
+    for (const song of songArray) {
         ul.innerHTML += `
             <li>
                 <img src="music.svg" alt="icon">
@@ -86,15 +89,62 @@ async function main() {
             </li>`;
     }
 
-    // Song click to play
     document.querySelectorAll(".songlist ul li").forEach((li) => {
         li.addEventListener("click", () => {
             const songName = li.querySelector(".songname").innerText.trim();
             playmusic(songName + ".mp3");
         });
     });
+}
 
-    // Play/Pause toggle
+async function displayAlbums() {
+    console.log("Displaying albums...");
+
+    let res = await fetch(`/songs/`);
+    let html = await res.text();
+    let div = document.createElement("div");
+    div.innerHTML = html;
+
+    let anchors = div.getElementsByTagName("a");
+    let cardContainer = document.querySelector(".cardContainer");
+    let array = Array.from(anchors);
+
+    for (let index = 0; index < array.length; index++) {
+        const e = array[index];
+
+        if (e.href.includes("/songs") && !e.href.includes(".htaccess") && !e.href.endsWith(".mp3")) {
+            let folder = e.href.split("/").slice(-2)[0];
+
+            try {
+                // Get the metadata of the folder
+                let metaRes = await fetch(`/songs/${folder}/info.json`);
+                let metaData = await metaRes.json();
+
+                cardContainer.innerHTML += `
+                    <div data-folder="${folder}" class="card">
+                        <div class="play">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path d="M5 20V4L19 12L5 20Z" stroke="#141B34" fill="#000" stroke-width="1.5"
+                                    stroke-linejoin="round" />
+                            </svg>
+                        </div>
+                        <img src="/songs/${folder}/cover.png" alt="${metaData.title}">
+                        <h2>${metaData.title}</h2>
+                        <p>${metaData.description}</p>
+                    </div>`;
+            } catch (err) {
+                console.warn(`Error loading info for folder "${folder}":`, err.message);
+            }
+        }
+    }
+}
+
+// Initialize app
+async function main() {
+    songs = await getSongs("songs/ncs"); // default playlist
+    loadSongListUI(songs);
+
     const playToggle = document.getElementById("playToggle");
     if (playToggle) {
         playToggle.addEventListener("click", () => {
@@ -110,7 +160,6 @@ async function main() {
         });
     }
 
-    // Open sidebar on small screens
     const ham = document.querySelector(".ham");
     if (ham) {
         ham.addEventListener("click", () => {
@@ -120,7 +169,6 @@ async function main() {
         });
     }
 
-    // Close sidebar
     const closeBtn = document.querySelector(".close");
     if (closeBtn) {
         closeBtn.addEventListener("click", () => {
@@ -130,13 +178,11 @@ async function main() {
         });
     }
 
-    // Previous Button
     const previous = document.getElementById("previous");
     if (previous) {
         previous.addEventListener("click", () => {
             if (!currentAudio) return;
-
-            const currentFile = decodeURIComponent(currentAudio.src).split("/songs/").pop();
+            const currentFile = decodeURIComponent(currentAudio.src).split("/").pop();
             const index = songs.findIndex(song => song === currentFile);
             if (index > 0) {
                 playmusic(songs[index - 1]);
@@ -144,30 +190,59 @@ async function main() {
         });
     }
 
-    // Next Button
     const next = document.getElementById("next");
     if (next) {
         next.addEventListener("click", () => {
             if (!currentAudio) return;
-
-            const currentFile = decodeURIComponent(currentAudio.src).split("/songs/").pop();
+            const currentFile = decodeURIComponent(currentAudio.src).split("/").pop();
             const index = songs.findIndex(song => song === currentFile);
             if (index !== -1 && index < songs.length - 1) {
                 playmusic(songs[index + 1]);
             }
         });
     }
-    // Volume control
-const volumeSlider = document.getElementById("volumeSlider");
-if (volumeSlider) {
-  volumeSlider.addEventListener("input", () => {
-    if (currentAudio) {
-      currentAudio.volume = volumeSlider.value;
+
+    const volumeSlider = document.getElementById("volumeSlider");
+    if (volumeSlider) {
+        volumeSlider.addEventListener("input", () => {
+            if (currentAudio) {
+                currentAudio.volume = volumeSlider.value;
+            }
+        });
     }
-  });
-}
+
+    // ✅ Playlist Card Click to Load Songs
+    Array.from(document.getElementsByClassName("card")).forEach(card => {
+        card.addEventListener("click", async e => {
+            const folder = e.currentTarget.dataset.folder;
+            if (!folder) return;
+
+            const newSongs = await getSongs(`songs/${folder}`);
+            loadSongListUI(newSongs);
+
+            if (newSongs.length > 0) {
+                playmusic(newSongs[0]);
+            }
+        });
+    });
+   document.querySelector(".volume-control img").addEventListener("click", (e) => {
+    if (!currentAudio) return;
+
+    const icon = e.target;
+
+    // Check if volume is not muted
+    if (currentAudio.volume > 0) {
+        currentAudio.volume = 0;
+        document.getElementById("volumeSlider").value = 0;
+        icon.src = "mute.svg"; // ✅ Update to your mute icon
+    } else {
+        currentAudio.volume = 1;
+        document.getElementById("volumeSlider").value = 1;
+        icon.src = "volume.svg"; // ✅ Back to volume icon
+    }
+});
 
 }
 
-// Run main
+// Run the app
 main();
